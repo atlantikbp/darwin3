@@ -1,1 +1,147 @@
-# darwin3
+# Darwin Reborn
+
+Creatures with real genetics, for **Fabric on Minecraft 26.3** (Java 25). A from-scratch reimagining of the
+old Darwin mod idea (one mob built from genes: body parts, colour, behaviour, mutations). No code from the
+original is used.
+
+## How to get the .jar (no installs needed)
+
+1. Create an empty repository on GitHub and upload the contents of this folder (keep the `.github` folder).
+2. Open the **Actions** tab. The `build` workflow runs by itself on every push.
+3. When it is green, open the run and download the **Artifacts** archive. Inside `build/libs/` take
+   `darwin-reborn-0.3.0.jar` (not the `-sources` one).
+4. Put the jar into your `mods` folder together with **Fabric API** (0.161.0+26.3) on Minecraft 26.3 with Fabric Loader 0.19.5 or newer.
+
+To build locally instead: install JDK 25 and run `./gradlew build`.
+
+If the build is red, open the failed step and send the error text back: the Minecraft-facing code was written
+without being able to compile it (see Status).
+
+## Playing
+
+* **Darwin Creature Spawn Egg** (spawn eggs tab), or wild creatures in the overworld. Species depend on the biome
+  (forest, taiga, jungle, savanna, badlands, mountains, plains...).
+* Feed two creatures **wheat** to breed them. Litters of 1-3, the genes are recombined and can mutate.
+* **Genetic Lens** (tools tab): right-click a creature to read its genome, including the recessive genes it
+  secretly carries. Right-click a second creature and the lens forecasts the offspring of the pair, with the
+  probability of every trait and the risk of lethal and defect genes.
+
+## Hybrids with vanilla animals (0.3.0)
+
+Cows, sheep, pigs, chickens, rabbits, goats, horses, donkeys, wolves, cats and foxes can be crossed with each other
+and with the creatures of the mod.
+
+1. Feed two animals of **different kinds** their own breeding food. Both go into love.
+2. Put them close together. If no same-kind lover is near, they walk towards each other (up to 14 blocks).
+3. Within 2.5 blocks they mate: 1-2 baby **Darwin Creatures** appear, with a real genome crossed from both parents
+   (heart particles and a chat message; if the cross fails, smoke).
+
+What the child inherits (it is a true mix, so it looks like both parents):
+
+* **Markings of both parents.** Patterns are codominant: the child shows the pattern of each strand, the second one in a
+  contrasting shade. Cow x sheep gives the cow's patches **and** the sheep's dark face and legs.
+* **Colour** is the average of the parents (coat, markings, eyes), **size, health, speed and lifespan** blend too.
+* **Body parts** (head, snout, ears, tail, legs, crest, eyes, coat) come from either parent, so the child is a
+  patchwork of both. Hybrid vigour makes it sturdier than its parents.
+
+**Mutations and evolution.** The further apart two parents are, the more their offspring mutate: up to five times the
+normal rate, with extra shuffling of the chromosomes ("genomic shock"). A hybrid of cow and sheep can therefore be born
+with a trait neither parent had (a new ear shape, pattern, eye colour, behaviour...); you get a chat message and
+enchantment particles when that happens. Keep such a mutant, cross it again with another species or with its own kind,
+and select the offspring: the lens shows what each animal carries, and selection over generations (size, speed,
+colours, traits) does the rest. Every kind can be crossed with every other kind, hybrids included.
+
+A vanilla animal has a *virtual* genome: its species archetype (cow = bovine, sheep = woolly, pig = piglet,
+chicken = fowl, rabbit = hare, goat, horse and donkey = horse, wolf = hound, cat = feline, fox = vulpine), drawn to look
+like the real animal, with carriers seeded from its UUID so it is always the same animal. Right-click any of them
+with the **Genetic Lens** to read it and to get a forecast against another animal.
+Crosses are slightly harder than ordinary matings.
+
+## Looks (0.3.0)
+
+Each creature is drawn in several passes over one model, always in the same order:
+
+1. **Coat**: one of four textures (smooth, fur, scales, fluffy) in the primary colour. Light belly, pale muzzle with a
+   nose and mouth line, dark hooves with pale socks, pale tail tip, a darker outline on box edges.
+2. **Markings** in a second colour: lengthwise stripes, tiger rings, spots, patches, dark belly, saddle, speckles,
+   cracked cells, diagonal stripes, dithered gradient. The crest uses the same colour.
+3. **Eyes**: white of the eye, iris and pupil in the iris colour, a white shine. Every animal **blinks** at its own
+   rhythm (the lid is a darker shade of its coat). Eyes also appear on the sides of the head.
+
+Genes: `coat`, `crest` (none, spikes, sail, mane), `eye_shape` (round, big, slit, tiny), `eye_hue`, `mark_hue`,
+`mark_val`. Patterns are painted from 3D positions on every body part, so stripes continue across faces. The 8 wild
+species differ in silhouette, coat, markings, eyes and crest. Textures are generated by `tools/make_assets.py`.
+
+## Selective breeding in practice
+
+* Creatures age: the longevity genes set a lifespan of roughly 3 to 12 Minecraft days. Past it they slowly lose health
+  (old age), so a line has to be renewed by breeding.
+* Failed conceptions (low fertility, or every embryo lost to the lethal gene) put both parents on the normal
+  breeding cooldown, so a bad pairing costs time.
+* Wild creatures look like their species but carry hidden recessives. Pair two look-alikes and a new trait
+  (no ears, a different tail) can appear in a quarter of the offspring.
+* Pure lines breed true but are frailer and less fertile (inbreeding). Crossing two different lines gives strong
+  hybrids (hybrid vigour) whose own offspring split again.
+* Keep an eye on the lens: carrier x carrier pairings of the lethal gene lose a quarter of the embryos, and the
+  defect gene produces frail offspring.
+* Traits that matter: size, health, speed, lifespan, fertility, litter size (polygenic, blend of parents),
+  hunting instinct, herding, shade seeking, nocturnal activity, sunburn, water sensitivity, fire immunity,
+  cold resistance, glowing, and 16 possible drops.
+
+## Status
+
+| Part | State |
+|---|---|
+| Genetics core (`genetics/`) | Done and tested: 49 self-tests pass. |
+| Creature, breeding, behaviour, lens, spawning, model, renderer, textures, lang | Written against the 26.x API and checked by hand against the official Fabric example code and NeoForge sources, **never compiled or launched** (the build environment could not reach Fabric's Maven server). Expect to fix a few compile errors or visual bugs on first run. |
+| More species, taming, genetic machines | Not done. |
+
+Hunting species (hunting gene) kill vanilla livestock (cows, sheep, pigs, chickens, rabbits) and, if they are
+predators, smaller creatures of this mod. Check a creature with the lens before putting it in a pen with livestock.
+
+Likeliest trouble spots: the render layers and colour tint (`CreatureRenderer`), model part visibility/scale
+(`CreatureModel`), the hybrid matchmaker (`HybridBridge`: `isInLove`, `getAge`, navigation calls), spawn registration (`DarwinReborn`).
+
+## If the build fails
+
+Send the error text from the failed GitHub Actions step (or from `./gradlew build`). Typical causes and fixes:
+
+* `cannot find symbol` / `package ... does not exist` in `entity/`, `item/` or `client/`: a Minecraft class or method
+  was renamed between versions. The error names the line; it is a one-line fix.
+* `method does not override or implement a method from a supertype`: same cause (an `@Override` on a changed method).
+* Build passes but the game crashes on start: open `logs/latest.log` (or the crash report) and send the first
+  `Caused by:` block.
+* Creatures are grey or invisible: send a screenshot and `latest.log`. See `CreatureRenderer.getModelTint` and
+  `CreatureModel`.
+
+## Genetics tests (no Minecraft needed)
+
+    ./gradlew selfTest
+
+or with any JDK 21+:
+
+    javac -d out $(find src/main/java/com/darwinreborn/genetics src/test -name '*.java')
+    java -cp out com.darwinreborn.genetics.SelfTest
+
+## How the genetics work
+
+* **Diploid**: two alleles per gene, 40 genes on 7 chromosomes.
+* **Dominance**: discrete genes have a dominance order; "absent" appendages are recessive, so they hide in carriers.
+* **Polygenic traits**: both alleles are averaged; offspring blend their parents with random spread.
+* **Linkage and crossing over**: genes on one chromosome travel together (15% crossover between neighbours).
+* **Mutation**: per allele and gene; rarer for behaviour, more common for polygenic traits.
+* **Inbreeding depression and hybrid vigour**: vigour follows heterozygosity.
+* **Genetic load**: a recessive defect (frail, half fertility) and a recessive lethal (embryo lost).
+* **Wild species** (`Archetype`): eight starting species with hidden recessives, plus two farm archetypes (fowl, hare) used for hybrids.
+
+## Layout
+
+    src/main/java/.../genetics/   Locus, Loci, Genome, Phenotype, Breeding, Archetype, GenomeReport (no Minecraft)
+    src/main/java/.../entity/     GeneticCreature, ModEntities, Species, goal/HerdGoal, goal/ShadeGoal
+    src/main/java/.../hybrid/     HybridBridge (vanilla animals: virtual genomes, crossing)
+    src/main/java/.../item/       ModItems, GeneticLensItem, LensText
+    src/client/java/.../client/   CreatureModel, CreatureRenderer, CreatureRenderState, DarwinRebornClient
+    src/test/java/.../genetics/   SelfTest
+    tools/make_assets.py          regenerates textures, AtlasLayout.java, item JSON and lang files (en, ru)
+    tools/atlas.py                box sizes, texture packing and painters (shared with the preview)
+    tools/preview.py              contact sheet of creatures from the generated PNGs (needs Pillow)

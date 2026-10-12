@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "darwinreborn:item/creature_spawn_egg"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "darwinreborn:item/creature_spawn_egg"
+  }
+}

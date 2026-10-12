@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "darwinreborn",
+  "version": "${version}",
+  "name": "Darwin Reborn",
+  "description": "Creatures with real genetics: diploid genomes, dominance, linkage, mutation, inbreeding and hybrid vigour. A from-scratch reimagining of the classic Darwin mod idea.",
+  "authors": ["You"],
+  "license": "CC0-1.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.darwinreborn.DarwinReborn"],
+    "client": ["com.darwinreborn.client.DarwinRebornClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
